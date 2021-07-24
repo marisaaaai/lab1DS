@@ -1,6 +1,6 @@
 ---
-title: "Lab1"
-author: "Juan De Leon"
+title: "Laboratorio 1. Análisis Exploratorio. PCA, apriori"
+author: "Juan De Leon, Maria Isabel Montoya"
 date: "7/23/2021"
 output: html_document
 ---
@@ -9,22 +9,99 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r echo=FALSE}
+library(ggplot2)
+library(ggpubr)
+theme_set(theme_pubr())
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r echo=FALSE}
+datosTrain <- read.csv('./train.csv')
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Análisis Exploratorio
+
+Resumen del dataset:
+
+```{r echo=FALSE}
+summary(datosTrain)
+```
+
+Tipo de cada variable del dataset:
+
+```{r echo=FALSE }
+
+data.frame("Variable"=c(colnames(datosTrain)), "Tipo de Variable"=c("N/A", "Cualitativa Nominal", "Cualitativa Nominal", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Ordinal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cuantitativa Discreta", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cualitativa Nominal", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cuantitativa Discreta", "Cualitativa Ordinal", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cualitativa Nominal", "Cualitativa Ordinal", "Cualitativa Nominal", "Cualitativa Nominal", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cualitativa Ordinal", "Cuantitativa Discreta", "Cualitativa Nominal", "Cuantitativa Discreta", "Cualitativa Ordinal", "Cualitativa Nominal", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cualitativa Nominal", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cualitativa Nominal", "Cuantitativa Discreta", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cualitativa Nominal", "Cuantitativa Discreta"))
+
+```
+
+Graficos Exploratorios:
+
+```{r echo=FALSE}
+ggplot(datosTrain, aes(MSZoning))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(Street))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(Alley))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(LotShape))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(LandContour))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(Utilities))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(LotConfig))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(LandSlope))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(Neighborhood))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(Condition1))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(Condition2))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(BldgType))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(HouseStyle))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(RoofStyle))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(YearBuilt))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(YearRemodAdd))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(RoofMatl))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(Exterior1st))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(Exterior2nd))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(ExterQual))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(ExterCond))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(Foundation))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(BsmtQual))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(BsmtCond))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(BsmtExposure))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(BsmtFinType1))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(BsmtFinSF1))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(BsmtFinType2))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(Heating))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(HeatingQC))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(CentralAir))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(Electrical))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(KitchenQual))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(Functional))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(FireplaceQu))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(GarageType))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(GarageFinish))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(GarageQual))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(GarageCond))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(PavedDrive))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(PoolQC))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(Fence))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(MiscFeature))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(SaleType))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(SaleCondition))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(datosTrain, aes(SalePrice))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+ggplot(data=datosTrain) + geom_histogram(mapping = aes(x = SalePrice))
+ggplot(data=df) + geom_point(mapping = aes(y = SalePrice, x = LotArea)) 
+ggplot(data=df) + geom_point(mapping = aes(y = SalePrice, x = YearBuilt))
+ggplot(data=df) + geom_point(mapping = aes(y = SalePrice, x = YrSold))
+q<-ggplot(data=df) + geom_point(mapping = aes(y = SalePrice, x = Neighborhood))
+q + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+ggplot(data=df) + geom_point(mapping = aes(y = SalePrice, x = GarageType))
+ggplot(data=df) + geom_point(mapping = aes(y = SalePrice, x = GarageArea))
+
+```
+
+Un breve resumen:
+```{r echo=FALSE}
+library(tidyverse)
+sd<-datosTrain %>% select(2:81)
+library(gtsummary)
+tbl_summary(sd)
+```
+
+Se escogieron las variables representadas en las graficas presentadas anteriormente ya que se considero que estas estan fuertemente relacionadas al Sale Price. Precisamente se obtuvo mucha informacion a partir de esto. Las variables cuantitativas, en su mayoria, tienen una distribucion normal. Asimismo, se pudo identificar cuales eran los rangos de precios y que factores influian mas en el mismo.
+

@@ -1,0 +1,8 @@
+"0","library(ggplot2)"
+"2","package ‘ggplot2’ was built under R version 4.0.5"
+"0","library(ggpubr)"
+"2","Registered S3 method overwritten by 'data.table':
+  method           from
+  print.data.table     
+"
+"0","theme_set(theme_pubr())"
