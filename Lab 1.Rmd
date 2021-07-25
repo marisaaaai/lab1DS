@@ -134,19 +134,38 @@ Estudie si es conveniente hacer un Análisis de Componentes Principales. Recuerd
 cuantitativas <- subset (datosTrain, select = c(2,4,5,18,19,20,21,27,35,37,38,39,44,45,46,47,48,49,50,51,52,53,55,57,60,62,63,67,68,69,70,71,72,76,77,78,82))
 cuantitativas <- na.omit(cuantitativas)
 
-#pafDatos<-paf(as.matrix(cuantitativas[,]))
+#pafDatos<-paf(as.matrix(cuantitativas))
 #str(cuantitativas)
 #pafDatos$KMO #
 #pafDatos$Bartlett #
 #summary(pafDatos)
 
-# El mínimo nivel de soporte y confianza aceptados
+
+```
+
+Obtenga  reglas  de  asociación  interesantes  del  dataset.  Discuta  sobre  el  nivel  de  confianza  y soporte.
+
+Se continua a hacerse las reglas de asociación del conjunto de datos train de Kaggle. Se uso un soporte de 0.2 y una confianza de 0.70. 
+```{r}
 reglas<-apriori(cuantitativas, parameter = list(support = 0.2,
                                         confidence = 0.70,
                                         target = "rules"))
-reglas
+inspect(sort(x = head(reglas), decreasing = TRUE, by = "confidence"))
+inspect(sort(x = tail(reglas), decreasing = TRUE, by = "confidence"))
+inspect(sort(x = reglas[1000:1100,], decreasing = TRUE, by = "confidence"))
 ```
 
+Para las reglas  de asociación se nos dió un resultado de 5019736 reglas, por lo que no se fue capaz de mostrar todo las reglas posibles. Por lo que se decidió mostrar 112 reglas, 6 de las primeras posibles, las ultimas 6 y 100 aleatoriamente del conjunto de adentro.
 
+Para obtener una menor cantidad, se le subiran los parametros y se le dira que se tenga 0.95 de confianza y 0.9 de soporte
+```{r}
+reglas<-apriori(cuantitativas, parameter = list(support = 0.9,
+                                        confidence = 0.95,
+                                        target = "rules"))
+inspect(sort(x = reglas, decreasing = TRUE, by = "confidence"))
 
+```
 
+Con un alto nivel de confianza y un alto soporte, las reglas de asociación fueron las esperadas, las 2304. ¿Por qué fueron las esperadas? Ya que al ya saber que estamos hablando de casas, podemos clasificarlas manualmente por caracteristicas, muchas de las columnas ya podiamos esperar que esten relacionadas entre si y sus valores ya que entre menos kitchenQual tiene usualmente, el area de la casa tambien es pequeña, o se encuentra en un área residencial no deseada. O si tiene un garage pequeño, también no tiene piscina y que no tiene espacio para tantos carros. 
+
+Tenemos que agregar que también muchas de las reglas de asociación presentadas eran las mismas solo que al revés, lo cual no nos da tanto insight de nuestro set de datos. 
