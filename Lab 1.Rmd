@@ -253,3 +253,6 @@ inspect(sort(x = reglas, decreasing = TRUE, by = "confidence"))
 Con un alto nivel de confianza y un alto soporte, las reglas de asociación fueron las esperadas, las 2304. ¿Por qué fueron las esperadas? Ya que al ya saber que estamos hablando de casas, podemos clasificarlas manualmente por caracteristicas, muchas de las columnas ya podiamos esperar que esten relacionadas entre si y sus valores ya que entre menos kitchenQual tiene usualmente, el area de la casa tambien es pequeña, o se encuentra en un área residencial no deseada. O si tiene un garage pequeño, también no tiene piscina y que no tiene espacio para tantos carros. 
 
 Tenemos que agregar que también muchas de las reglas de asociación presentadas eran las mismas solo que al revés, lo cual no nos da tanto insight de nuestro set de datos. 
+
+Link de Github:
+https://github.com/marisaaaai/lab1DS 
