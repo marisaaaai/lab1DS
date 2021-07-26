@@ -125,28 +125,112 @@ det(rcor) #2.0541e-16
 
 El coeficiente de correlación entre todas las variables cuantitativas es 2.0541e-16 por lo que hay multicolinealidad entre ellas. 
 
+##Analisis de Componentes PCA
+
 Estudie si es conveniente hacer un Análisis de Componentes Principales. Recuerde que puede usar  el  índice  KMO  y  el  test  de  esfericidad  de  Bartlett. Haga  un  análisis  de  componentes principales con las variables numéricas, discuta los resultados e interprete los componentes.
 
 ```{r echo=FALSE}
 #Se debe analizar si se puede usar el anÃ¡lisis factorial 
 #para formar las combinaciones lineales de las variables
 #
-cuantitativas <- subset (datosTrain, select = c(2,4,5,18,19,20,21,27,35,37,38,39,44,45,46,47,48,49,50,51,52,53,55,57,60,62,63,67,68,69,70,71,72,76,77,78,82))
+cuantitativas <- subset (datosTrain, select = c(2,4,18,19,20,21,27,35,37,38,39,44,45,46,47,48,49,50,51,52,53,55,57,60,62,63,67,68,69,70,71,72,76,77,78,82))
 cuantitativas <- na.omit(cuantitativas)
-
-#pafDatos<-paf(as.matrix(cuantitativas))
+pafDatos<-paf(as.matrix(cuantitativas[,-c(3,7,9,13)]))
+cuantitativas <- subset (cuantitativas, select = -c(3,7,9,13))
 #str(cuantitativas)
-#pafDatos$KMO #
-#pafDatos$Bartlett #
-#summary(pafDatos)
-
+pafDatos$KMO #0.76627 #Tiene una adecuación aceptable muestral
+pafDatos$Bartlett #18098
+summary(pafDatos)
 
 ```
 
+De aqui podemos observar que tenemos un KMO de 0.76627 por lo que tiene una adecuación aceptable muestral. El coeficiente de Bartlett nos muestra que es de 18098, pero aun tenemos que hacer la prueba de Bartlett por lo que ponemos como hipótesis nula:
+H0: la matriz de correlaciones es igual a la matriz identidad
+Buscamos poder rechar Ho ya que significaría que hay suficiente multicolinealidad entre las variables.
+```{r echo=FALSE}
+cortest.bartlett(cuantitativas)
+
+```
+
+el valor p es de 0 lo que lo hace menor a 0.05, esto nos dice que el análisis factorial si podrá funcionar. Se prosigue mostrando la matriz de correlacion
+
+```{r echo=FALSE}
+cor(cuantitativas,use = "pairwise.complete.obs")
+
+```
+Por más que los valores pequeños son los más frecuentes, si podemos observar que hay variables altamente correlacionadas entre si. Como YearBuilt y YearRemodAdd. 
+Se prosigue con la normalización de los datos.
+```{r echo=FALSE}
+#Esta funciÃ³n normaliza los datos de una vez
+compPrinc<-prcomp(cuantitativas, scale = T)
+compPrinc
+#Standard deviations (1, .., p=32):
+ #[1] 2.60537 1.63350 1.57435 1.37296 1.23133 1.11219 1.10018
+# [8] 1.06923 1.05428 1.03111 1.00272 0.98275 0.96526 0.94168
+#[15] 0.91819 0.89120 0.86281 0.83845 0.80365 0.75351 0.69308
+#[22] 0.64427 0.61548 0.55795 0.52514 0.45699 0.45004 0.39829
+#[29] 0.38185 0.33528 0.28982 0.19223
+summary(compPrinc)
+
+```
+De esto observamos los datos que se encuentran en los diferentes componentes (en este caso 32 porque se tiene 32 variables cuantitativas). Este summary del final nos demuestra que podemos tener representados el 80.42% de nuestros datos en solamente 15 componentes, en vez de tener las 32 variables. 
+
+Luego vamos a representar lo mismo solo que con un gráfico, donde nos muestra los vectores (en solamente dos dimensiones) y luego el summary de la representatividad que tiene los datos en los diferentes componentes. Otra vez, vemos que el 80.42% se representa en 15 componentes, por lo que si se puede reducir las dimensiones.
+
+```{r echo=FALSE}
+compPrincPCA<-PCA(cuantitativas,ncp=ncol(cuantitativas), scale.unit = T)
+summary(compPrincPCA)
+
+```
+
+Procedemos a hacer gráficos que nos dice en cuantos componentes deberiamos de representar nuestro PCA.
+```{r echo=FALSE}
+fviz_eig(compPrinc, addlabels = TRUE, choice = c("eigenvalue"), ylim = c(0, 3))
+
+```
+
+Con este gráfico nos demuestra que solo las primeras 15 dimensiones tienen su valor propio arriba de 1. Lo que corrobora que solo usando las primeras 15 dimensiones es suficiente para representar nuestros datos. 
+
+Proseguimos a ver cuales son las variables que mayor contribuyen a cada dimensión (las 15 mencionadas)
+
+```{r echo=FALSE}
+fviz_contrib(compPrinc, choice = "var", axes = 1, top = 32) 
+```
+En la primera dimensión encontramos que 11 de las variables cuantitativas estan altamente representadas acá. Esas variables son tipoDeCasa, GarageCars, GarageArea, GrLivArea, TotalBsmtSF, X1stFlrSF, FullBath, YearBuilt, GarageYrBlt, YearRemodAdd y totRmsAbvGrd, estas variables nos dice sobre el tamaño de la casa y la calidad de la casa por lo que su nombre podía ser COndicionGeneral.
+
+Proseguimos con las demás dimensiones.
+```{r echo=FALSE}
+fviz_contrib(compPrinc, choice = "var", axes = 2, top = 32) 
+fviz_contrib(compPrinc, choice = "var", axes = 3, top = 32) 
+fviz_contrib(compPrinc, choice = "var", axes = 4, top = 32) 
+fviz_contrib(compPrinc, choice = "var", axes = 5, top = 32) 
+fviz_contrib(compPrinc, choice = "var", axes = 6, top = 32) 
+fviz_contrib(compPrinc, choice = "var", axes = 7, top = 32) 
+fviz_contrib(compPrinc, choice = "var", axes = 8, top = 32) 
+fviz_contrib(compPrinc, choice = "var", axes = 9, top = 32) 
+fviz_contrib(compPrinc, choice = "var", axes = 10, top = 32) 
+fviz_contrib(compPrinc, choice = "var", axes = 11, top = 32) 
+fviz_contrib(compPrinc, choice = "var", axes = 12, top = 32) 
+fviz_contrib(compPrinc, choice = "var", axes = 13, top = 32) 
+fviz_contrib(compPrinc, choice = "var", axes = 14, top = 32) 
+fviz_contrib(compPrinc, choice = "var", axes = 15, top = 32) 
+
+```
+
+Sin embargo, ver las variables y pensar en variables que engloben las 32 variables cuantitativas que tenemos de esta manera es confusa. Por lo que se hara a través de un diagrama de correlación. 
+
+```{r echo=FALSE}
+var<-get_pca_var(compPrinc)
+corrplot(var$cos2, is.corr = F)
+```
+
+Ya se tiene una variable que engloba a 11 otras, por lo que nos quedan variables por describir. En la dimension dos la podemos llamar infoJardin ya que son las variables BedroomAvr y totalrmsabvgrd y grlivearea lo que nos engloba acá. En la tercera dimension la podemos llamar tipoDeCalidadFinalizados ya que nos muestra que las variables que más aportan a este es BSMTFinSF1, BsmtUnfSF, BSMTFullBath. En la cuarta dimension podemos encontrar a MsSubClass por lo que la podemos dejar asi. En la quinta dimension podemos hablar de condKitchen ya que engloba a kitchenAvg y a OverallCond. En la sexta dimension podemos hablar de Afueras ya que nos muestra que se encuentra las variables WoodDeckSF y ScreenPorch. En la septima dimension podemos colocarla como temporalidad ya que lo engloba las variables MoSold y YrSold. La octava la podemos dejar como pool ya que está encontrada con PoolArea. La novena la podemos llamaar agregados ya que esta englobada por MiscValue, BsmtHalfBath y HalfBath. La decima dimensión solo se ecnuentra X3SsnPorch por lo que lo podmeos dejar así. En la onceava lo podemos relacionar con la novena ya que tambien se encuentra MiscValues solo que en la onceava se incluye a las FirePlaces. En la terceava dimension podemos encontrar a EnclosedPorch y openPorchSF por lo que la podemos llamar porch, la dimension 14 se queda solo con LowQualFinSF y la ultima la podemos dejar como LotFrontage. Asi es como redujimos de 32 variables a solamente 15 a traves del analisis de componentes PCA y e test de Bartlett.
+
+##Reglas Apriori
 Obtenga  reglas  de  asociación  interesantes  del  dataset.  Discuta  sobre  el  nivel  de  confianza  y soporte.
 
 Se continua a hacerse las reglas de asociación del conjunto de datos train de Kaggle. Se uso un soporte de 0.2 y una confianza de 0.70. 
-```{r}
+```{r echo=FALSE}
 reglas<-apriori(cuantitativas, parameter = list(support = 0.2,
                                         confidence = 0.70,
                                         target = "rules"))
@@ -158,7 +242,7 @@ inspect(sort(x = reglas[1000:1100,], decreasing = TRUE, by = "confidence"))
 Para las reglas  de asociación se nos dió un resultado de 5019736 reglas, por lo que no se fue capaz de mostrar todo las reglas posibles. Por lo que se decidió mostrar 112 reglas, 6 de las primeras posibles, las ultimas 6 y 100 aleatoriamente del conjunto de adentro.
 
 Para obtener una menor cantidad, se le subiran los parametros y se le dira que se tenga 0.95 de confianza y 0.9 de soporte
-```{r}
+```{r echo=FALSE}
 reglas<-apriori(cuantitativas, parameter = list(support = 0.9,
                                         confidence = 0.95,
                                         target = "rules"))
