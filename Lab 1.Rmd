@@ -6,10 +6,10 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE }
 library(arules)
 library(ggplot2)
 library(rela)
@@ -22,7 +22,7 @@ library(ggpubr)
 theme_set(theme_pubr())
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE }
 datosTrain <- read.csv('./train.csv')
 ```
 
@@ -30,13 +30,13 @@ datosTrain <- read.csv('./train.csv')
 
 Resumen del dataset:
 
-```{r echo=FALSE}
+```{r echo=FALSE }
 summary(datosTrain)
 ```
 
 Tipo de cada variable del dataset:
 
-```{r echo=FALSE }
+```{r echo=FALSE  }
 
 data.frame("Variable"=c(colnames(datosTrain)), "Tipo de Variable"=c("N/A", "Cualitativa Nominal", "Cualitativa Nominal", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Ordinal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cualitativa Nominal", "Cuantitativa Discreta", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cualitativa Nominal", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cuantitativa Discreta", "Cualitativa Ordinal", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cualitativa Nominal", "Cualitativa Ordinal", "Cualitativa Nominal", "Cualitativa Nominal", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cualitativa Ordinal", "Cuantitativa Discreta", "Cualitativa Nominal", "Cuantitativa Discreta", "Cualitativa Ordinal", "Cualitativa Nominal", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cualitativa Nominal", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cuantitativa Discreta", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cualitativa Nominal", "Cuantitativa Discreta", "Cualitativa Ordinal", "Cualitativa Ordinal", "Cualitativa Nominal", "Cuantitativa Discreta"))
 
@@ -44,7 +44,7 @@ data.frame("Variable"=c(colnames(datosTrain)), "Tipo de Variable"=c("N/A", "Cual
 
 Graficos Exploratorios:
 
-```{r echo=FALSE}
+```{r echo=FALSE }
 ggplot(datosTrain, aes(MSZoning))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
 ggplot(datosTrain, aes(Street))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
 ggplot(datosTrain, aes(Alley))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
@@ -103,7 +103,7 @@ ggplot(data=datosTrain) + geom_point(mapping = aes(y = SalePrice, x = GarageArea
 ```
 
 Un breve resumen:
-```{r echo=FALSE}
+```{r echo=FALSE }
 library(tidyverse)
 sd<-datosTrain %>% select(2:81)
 library(gtsummary)
@@ -113,7 +113,7 @@ tbl_summary(sd)
 Se escogieron las variables representadas en las graficas presentadas anteriormente ya que se considero que estas estan fuertemente relacionadas al Sale Price. Precisamente se obtuvo mucha informacion a partir de esto. Las variables cuantitativas, en su mayoria, tienen una distribucion normal. Asimismo, se pudo identificar cuales eran los rangos de precios y que factores influian mas en el mismo.
 
 Diagrama de correlación de las variables cuantitativas del dataset.
-```{r echo=FALSE}
+```{r echo=FALSE }
 datosTrain$tipoDeCasa = as.numeric(as.character( cut(datosTrain$SalePrice,c(0,145000,205000,410000), labels = c(1, 2, 3))))
 frstselect <- subset (datosTrain, select = c(2,4,5,18,19,20,21,27,35,37,38,39,44,45,46,47,48,49,50,51,52,53,55,57,60,62,63,67,68,69,70,71,72,76,77,78,82))
 sapply(frstselect,class)
@@ -125,11 +125,11 @@ det(rcor) #2.0541e-16
 
 El coeficiente de correlación entre todas las variables cuantitativas es 2.0541e-16 por lo que hay multicolinealidad entre ellas. 
 
-##Analisis de Componentes PCA
+## Analisis de Componentes PCA
 
 Estudie si es conveniente hacer un Análisis de Componentes Principales. Recuerde que puede usar  el  índice  KMO  y  el  test  de  esfericidad  de  Bartlett. Haga  un  análisis  de  componentes principales con las variables numéricas, discuta los resultados e interprete los componentes.
 
-```{r echo=FALSE}
+```{r echo=FALSE }
 #Se debe analizar si se puede usar el anÃ¡lisis factorial 
 #para formar las combinaciones lineales de las variables
 #
@@ -147,20 +147,20 @@ summary(pafDatos)
 De aqui podemos observar que tenemos un KMO de 0.76627 por lo que tiene una adecuación aceptable muestral. El coeficiente de Bartlett nos muestra que es de 18098, pero aun tenemos que hacer la prueba de Bartlett por lo que ponemos como hipótesis nula:
 H0: la matriz de correlaciones es igual a la matriz identidad
 Buscamos poder rechar Ho ya que significaría que hay suficiente multicolinealidad entre las variables.
-```{r echo=FALSE}
+```{r echo=FALSE }
 cortest.bartlett(cuantitativas)
 
 ```
 
 el valor p es de 0 lo que lo hace menor a 0.05, esto nos dice que el análisis factorial si podrá funcionar. Se prosigue mostrando la matriz de correlacion
 
-```{r echo=FALSE}
+```{r echo=FALSE }
 cor(cuantitativas,use = "pairwise.complete.obs")
 
 ```
 Por más que los valores pequeños son los más frecuentes, si podemos observar que hay variables altamente correlacionadas entre si. Como YearBuilt y YearRemodAdd. 
 Se prosigue con la normalización de los datos.
-```{r echo=FALSE}
+```{r echo=FALSE }
 #Esta funciÃ³n normaliza los datos de una vez
 compPrinc<-prcomp(cuantitativas, scale = T)
 compPrinc
@@ -177,14 +177,14 @@ De esto observamos los datos que se encuentran en los diferentes componentes (en
 
 Luego vamos a representar lo mismo solo que con un gráfico, donde nos muestra los vectores (en solamente dos dimensiones) y luego el summary de la representatividad que tiene los datos en los diferentes componentes. Otra vez, vemos que el 80.42% se representa en 15 componentes, por lo que si se puede reducir las dimensiones.
 
-```{r echo=FALSE}
+```{r echo=FALSE }
 compPrincPCA<-PCA(cuantitativas,ncp=ncol(cuantitativas), scale.unit = T)
 summary(compPrincPCA)
 
 ```
 
 Procedemos a hacer gráficos que nos dice en cuantos componentes deberiamos de representar nuestro PCA.
-```{r echo=FALSE}
+```{r echo=FALSE }
 fviz_eig(compPrinc, addlabels = TRUE, choice = c("eigenvalue"), ylim = c(0, 3))
 
 ```
@@ -193,13 +193,13 @@ Con este gráfico nos demuestra que solo las primeras 15 dimensiones tienen su v
 
 Proseguimos a ver cuales son las variables que mayor contribuyen a cada dimensión (las 15 mencionadas)
 
-```{r echo=FALSE}
+```{r echo=FALSE }
 fviz_contrib(compPrinc, choice = "var", axes = 1, top = 32) 
 ```
 En la primera dimensión encontramos que 11 de las variables cuantitativas estan altamente representadas acá. Esas variables son tipoDeCasa, GarageCars, GarageArea, GrLivArea, TotalBsmtSF, X1stFlrSF, FullBath, YearBuilt, GarageYrBlt, YearRemodAdd y totRmsAbvGrd, estas variables nos dice sobre el tamaño de la casa y la calidad de la casa por lo que su nombre podía ser COndicionGeneral.
 
 Proseguimos con las demás dimensiones.
-```{r echo=FALSE}
+```{r echo=FALSE }
 fviz_contrib(compPrinc, choice = "var", axes = 2, top = 32) 
 fviz_contrib(compPrinc, choice = "var", axes = 3, top = 32) 
 fviz_contrib(compPrinc, choice = "var", axes = 4, top = 32) 
@@ -219,7 +219,7 @@ fviz_contrib(compPrinc, choice = "var", axes = 15, top = 32)
 
 Sin embargo, ver las variables y pensar en variables que engloben las 32 variables cuantitativas que tenemos de esta manera es confusa. Por lo que se hara a través de un diagrama de correlación. 
 
-```{r echo=FALSE}
+```{r echo=FALSE }
 var<-get_pca_var(compPrinc)
 corrplot(var$cos2, is.corr = F)
 ```
@@ -230,7 +230,7 @@ Ya se tiene una variable que engloba a 11 otras, por lo que nos quedan variables
 Obtenga  reglas  de  asociación  interesantes  del  dataset.  Discuta  sobre  el  nivel  de  confianza  y soporte.
 
 Se continua a hacerse las reglas de asociación del conjunto de datos train de Kaggle. Se uso un soporte de 0.2 y una confianza de 0.70. 
-```{r echo=FALSE}
+```{r echo=FALSE }
 reglas<-apriori(cuantitativas, parameter = list(support = 0.2,
                                         confidence = 0.70,
                                         target = "rules"))
@@ -242,7 +242,7 @@ inspect(sort(x = reglas[1000:1100,], decreasing = TRUE, by = "confidence"))
 Para las reglas  de asociación se nos dió un resultado de 5019736 reglas, por lo que no se fue capaz de mostrar todo las reglas posibles. Por lo que se decidió mostrar 112 reglas, 6 de las primeras posibles, las ultimas 6 y 100 aleatoriamente del conjunto de adentro.
 
 Para obtener una menor cantidad, se le subiran los parametros y se le dira que se tenga 0.95 de confianza y 0.9 de soporte
-```{r echo=FALSE}
+```{r echo=FALSE }
 reglas<-apriori(cuantitativas, parameter = list(support = 0.9,
                                         confidence = 0.95,
                                         target = "rules"))
