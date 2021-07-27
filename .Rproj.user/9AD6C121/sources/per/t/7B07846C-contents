@@ -10,7 +10,14 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r echo=FALSE}
+library(arules)
 library(ggplot2)
+library(rela)
+library(psych)
+library(FactoMineR)
+library(fpc)
+library(factoextra)
+library(corrplot)
 library(ggpubr)
 theme_set(theme_pubr())
 ```
@@ -85,13 +92,13 @@ ggplot(datosTrain, aes(SaleType))+ geom_bar(fill = "#0073C2FF") + theme_pubclean
 ggplot(datosTrain, aes(SaleCondition))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
 ggplot(datosTrain, aes(SalePrice))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
 ggplot(data=datosTrain) + geom_histogram(mapping = aes(x = SalePrice))
-ggplot(data=df) + geom_point(mapping = aes(y = SalePrice, x = LotArea)) 
-ggplot(data=df) + geom_point(mapping = aes(y = SalePrice, x = YearBuilt))
-ggplot(data=df) + geom_point(mapping = aes(y = SalePrice, x = YrSold))
-q<-ggplot(data=df) + geom_point(mapping = aes(y = SalePrice, x = Neighborhood))
+ggplot(data=datosTrain) + geom_point(mapping = aes(y = SalePrice, x = LotArea)) 
+ggplot(data=datosTrain) + geom_point(mapping = aes(y = SalePrice, x = YearBuilt))
+ggplot(data=datosTrain) + geom_point(mapping = aes(y = SalePrice, x = YrSold))
+q<-ggplot(data=datosTrain) + geom_point(mapping = aes(y = SalePrice, x = Neighborhood))
 q + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-ggplot(data=df) + geom_point(mapping = aes(y = SalePrice, x = GarageType))
-ggplot(data=df) + geom_point(mapping = aes(y = SalePrice, x = GarageArea))
+ggplot(data=datosTrain) + geom_point(mapping = aes(y = SalePrice, x = GarageType))
+ggplot(data=datosTrain) + geom_point(mapping = aes(y = SalePrice, x = GarageArea))
 
 ```
 
@@ -104,4 +111,42 @@ tbl_summary(sd)
 ```
 
 Se escogieron las variables representadas en las graficas presentadas anteriormente ya que se considero que estas estan fuertemente relacionadas al Sale Price. Precisamente se obtuvo mucha informacion a partir de esto. Las variables cuantitativas, en su mayoria, tienen una distribucion normal. Asimismo, se pudo identificar cuales eran los rangos de precios y que factores influian mas en el mismo.
+
+Diagrama de correlación de las variables cuantitativas del dataset.
+```{r echo=FALSE}
+datosTrain$tipoDeCasa = as.numeric(as.character( cut(datosTrain$SalePrice,c(0,145000,205000,410000), labels = c(1, 2, 3))))
+frstselect <- subset (datosTrain, select = c(2,4,5,18,19,20,21,27,35,37,38,39,44,45,46,47,48,49,50,51,52,53,55,57,60,62,63,67,68,69,70,71,72,76,77,78,82))
+sapply(frstselect,class)
+M <- cor(frstselect)
+corrplot(M, method = "circle") # Display the correlation coefficient
+rcor<-cor(datosTrain[,c(2,4,5,18,19,20,21,27,35,37,38,39,44,45,46,47,48,49,50,51,52,53,55,57,60,62,63,67,68,69,70,71,72,76,77,78,82)],use = "pairwise.complete.obs")
+det(rcor) #2.0541e-16
+```
+
+El coeficiente de correlación entre todas las variables cuantitativas es 2.0541e-16 por lo que hay multicolinealidad entre ellas. 
+
+Estudie si es conveniente hacer un Análisis de Componentes Principales. Recuerde que puede usar  el  índice  KMO  y  el  test  de  esfericidad  de  Bartlett. Haga  un  análisis  de  componentes principales con las variables numéricas, discuta los resultados e interprete los componentes.
+
+```{r echo=FALSE}
+#Se debe analizar si se puede usar el anÃ¡lisis factorial 
+#para formar las combinaciones lineales de las variables
+#
+cuantitativas <- subset (datosTrain, select = c(2,4,5,18,19,20,21,27,35,37,38,39,44,45,46,47,48,49,50,51,52,53,55,57,60,62,63,67,68,69,70,71,72,76,77,78,82))
+cuantitativas <- na.omit(cuantitativas)
+
+#pafDatos<-paf(as.matrix(cuantitativas[,]))
+#str(cuantitativas)
+#pafDatos$KMO #
+#pafDatos$Bartlett #
+#summary(pafDatos)
+
+# El mínimo nivel de soporte y confianza aceptados
+reglas<-apriori(cuantitativas, parameter = list(support = 0.2,
+                                        confidence = 0.70,
+                                        target = "rules"))
+reglas
+```
+
+
+
 
