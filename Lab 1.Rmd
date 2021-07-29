@@ -91,6 +91,12 @@ ggplot(datosTrain, aes(MiscFeature))+ geom_bar(fill = "#0073C2FF") + theme_pubcl
 ggplot(datosTrain, aes(SaleType))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
 ggplot(datosTrain, aes(SaleCondition))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
 ggplot(datosTrain, aes(SalePrice))+ geom_bar(fill = "#0073C2FF") + theme_pubclean()
+
+```
+
+En los histogramas anteriores podemos notar que en su mayoria, ninguna variable muestra normalidad. Todas tienen algun sesgo ya sea positivo o negativo. 
+
+```{r echo=FALSE}
 ggplot(data=datosTrain) + geom_histogram(mapping = aes(x = SalePrice))
 ggplot(data=datosTrain) + geom_point(mapping = aes(y = SalePrice, x = LotArea)) 
 ggplot(data=datosTrain) + geom_point(mapping = aes(y = SalePrice, x = YearBuilt))
